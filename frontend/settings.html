@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Robot Settings</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 16px; }
+    label { display:block; margin: 10px 0 4px; font-weight: 600; }
+    input { width: 100%; padding: 8px; box-sizing: border-box; border-radius: 8px; border: 1px solid #ddd; }
+    .row { margin-bottom: 14px; }
+    .actions { margin-top: 18px; display:flex; gap:10px; justify-content:space-between; align-items:center; }
+    .right { display:flex; gap:10px; }
+    button { padding: 8px 14px; border-radius: 10px; border: 1px solid #ddd; background:#f5f5f5; cursor:pointer; }
+    button.primary { background: #276EF1; color: white; border: none; }
+    small { color:#666 }
+  </style>
+</head>
+<body>
+  <h2>Robot Settings</h2>
+  <div class="row">
+    <label for="robotId">Robot Name (ID)</label>
+    <input id="robotId" placeholder="robot-1" />
+    <small>Used to claim jobs with <code>robot_id</code> matching this value.</small>
+  </div>
+  <div class="row">
+    <label for="robotBase">Robot Base URL</label>
+    <input id="robotBase" placeholder="http://192.168.1.45:31950" />
+    <small>Where the app sends protocol uploads (Opentrons HTTP API).</small>
+  </div>
+  <div class="actions">
+    <button id="test">Test upload .py…</button>
+    <div class="right">
+      <button id="cancel">Close</button>
+      <button class="primary" id="save">Save</button>
+    </div>
+  </div>
+
+  <script>
+    const invoke = (cmd, args) => window.__TAURI__.invoke(cmd, args)
+
+    async function load() {
+      try {
+        const cfg = await invoke('load_config')
+        document.getElementById('robotId').value = cfg.robot_id || ''
+        document.getElementById('robotBase').value = cfg.robot_base || ''
+      } catch (e) { console.error(e) }
+    }
+    async function save() {
+      const id = document.getElementById('robotId').value.trim()
+      const base = document.getElementById('robotBase').value.trim()
+      if (!id) return alert('Robot ID is required')
+      if (!/^https?:\/\//.test(base)) return alert('Robot Base must start with http:// or https://')
+      try {
+        await invoke('save_config', { robotId: id, robotBase: base })
+        await invoke('start_bridge')
+        alert('Saved & bridge (re)started')
+      } catch (e) { alert('Save failed: ' + e) }
+    }
+    async function testUpload() {
+      try {
+        const msg = await invoke('test_upload')
+        alert(msg)
+      } catch (e) {
+        alert('Test failed: ' + e)
+      }
+    }
+    document.getElementById('save').addEventListener('click', save)
+    document.getElementById('cancel').addEventListener('click', () => window.close())
+    document.getElementById('test').addEventListener('click', testUpload)
+    window.addEventListener('DOMContentLoaded', load)
+  </script>
+</body>
+</html>

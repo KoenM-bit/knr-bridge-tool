@@ -1,0 +1,35 @@
+{
+  "package": {
+    "productName": "KNR Bridge",
+    "version": "0.1.0"
+  },
+  "build": {
+    "beforeBuildCommand": "",
+    "beforeDevCommand": "",
+    "devPath": "../frontend",
+    "distDir": "../frontend"
+  },
+  "tauri": {
+    "bundle": {
+      "identifier": "com.knr.bridge",
+      "targets": ["dmg", "app"],
+      "icon": ["icon.png"],
+      "resources": [".env"],
+      "macOS": {
+        "minimumSystemVersion": "10.13"
+      }
+    },
+    "systemTray": {
+      "iconPath": "icon.png"
+    },
+    "windows": [
+      {
+        "title": "KNR Bridge",
+        "width": 420,
+        "height": 260,
+        "resizable": false,
+        "visible": false
+      }
+    ]
+  }
+}

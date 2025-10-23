@@ -1,0 +1,8 @@
+node_modules/
+target/
+.idea/
+.venv/
+tmp/
+.DS_Store
+_archive/
+tmp/

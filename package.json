@@ -1,0 +1,27 @@
+{
+  "name": "knr-bridge-app",
+  "version": "0.1.0",
+  "description": "Tauri bridge app for uploading Opentrons protocols",
+  "author": "Koen Marijt",
+  "license": "MIT",
+  "scripts": {
+    "dev": "npx --no-install tauri dev",
+    "build": "npx --no-install tauri build",
+    "mock": "node mock/robot-mock.js",
+    "clean": "cargo clean && rm -rf target tmp"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.10"
+  },
+  "keywords": [
+    "tauri",
+    "opentrons",
+    "robot",
+    "bridge",
+    "tray"
+  ]
+}
