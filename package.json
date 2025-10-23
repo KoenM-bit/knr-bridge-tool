@@ -7,8 +7,21 @@
   "scripts": {
     "dev": "npx --no-install tauri dev",
     "build": "npx --no-install tauri build",
+    "build:debug": "npx --no-install tauri build --debug",
     "mock": "node mock/robot-mock.js",
-    "clean": "cargo clean && rm -rf target tmp"
+    "clean": "npm run clean:cargo && npm run clean:temp && npm run clean:node",
+    "clean:cargo": "cd src-tauri && cargo clean",
+    "clean:temp": "rm -rf tmp/* .DS_Store",
+    "clean:node": "rm -rf node_modules package-lock.json",
+    "start-fresh": "npm run clean && npm install && npm run dev",
+    "reset": "npm run clean && npm install",
+    "size": "du -sh . && echo '---' && du -sh node_modules src-tauri/target 2>/dev/null || echo 'Build artifacts not found'",
+    "check": "npm run check:cargo && npm run check:deps",
+    "check:cargo": "cd src-tauri && cargo check",
+    "check:deps": "npm audit",
+    "lint": "cd src-tauri && cargo fmt && cargo clippy",
+    "test": "cd src-tauri && cargo test",
+    "info": "echo '🚀 KNR Bridge Tool' && echo 'Dev: npm run dev' && echo 'Clean: npm run clean' && echo 'Fresh start: npm run start-fresh' && echo 'Mock server: npm run mock'"
   },
   "dependencies": {
     "express": "^5.1.0",
