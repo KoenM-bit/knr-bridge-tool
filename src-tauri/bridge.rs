@@ -20,17 +20,44 @@ impl Bridge {
     pub fn new(cfg: Config) -> Self {
         use std::path::PathBuf;
 
-        let env_path = PathBuf::from("./.env");
-        if dotenvy::from_path(&env_path).is_ok() {
-            println!("✅ Loaded .env from {:?}", env_path);
-        } else {
-            println!("⚠️ Could not load .env from {:?}", env_path);
+        // Try loading .env from multiple locations
+        let mut env_paths = vec![
+            PathBuf::from("./.env"),                    // Current directory
+            PathBuf::from("./src-tauri/.env"),         // Development location
+            PathBuf::from("../src-tauri/.env"),        // In case running from parent
+        ];
+        
+        // Add path next to the executable
+        if let Ok(exe_path) = std::env::current_exe() {
+            if let Some(exe_dir) = exe_path.parent() {
+                env_paths.push(exe_dir.join(".env"));
+                // Also try one level up from executable (common in app bundles)
+                if let Some(parent_dir) = exe_dir.parent() {
+                    env_paths.push(parent_dir.join(".env"));
+                }
+            }
+        }
+        
+        let mut env_loaded = false;
+        for env_path in &env_paths {
+            if dotenvy::from_path(env_path).is_ok() {
+                println!("✅ Loaded .env from {:?}", env_path);
+                env_loaded = true;
+                break;
+            }
+        }
+        
+        if !env_loaded {
+            println!("⚠️ Could not load .env from any of these paths: {:?}", env_paths);
         }
 
         let tmp_dir = std::env::temp_dir().join("opentrons-bridge");
         let _ = fs::create_dir_all(&tmp_dir);
 
-        let base = std::env::var("BACKEND").unwrap_or_default();
+        let base = std::env::var("BACKEND").unwrap_or_else(|_| {
+            eprintln!("❌ BACKEND environment variable not set! This will cause 'relative URL without a base' errors.");
+            String::new()
+        });
         let secret = std::env::var("BRIDGE_SHARED_SECRET").unwrap_or_default();
         let poll_ms = std::env::var("POLL_MS")
             .ok()
@@ -84,6 +111,10 @@ impl Bridge {
     // ===============================================================
 
     async fn get_job(&self) -> Result<Option<Job>> {
+        if self.base.is_empty() {
+            return Err(anyhow::anyhow!("BACKEND environment variable is not set. Please check your .env file and ensure BACKEND is properly configured."));
+        }
+        
         let url = format!("{}/jobs-get?robotId={}", self.base, self.cfg.robot_id);
         println!("📡 GET {}", url);
 
@@ -105,6 +136,10 @@ impl Bridge {
     }
 
     async fn ack(&self, id: &str) -> Result<()> {
+        if self.base.is_empty() {
+            return Err(anyhow::anyhow!("BACKEND environment variable is not set. Please check your .env file and ensure BACKEND is properly configured."));
+        }
+        
         let url = format!("{}/jobs-ack", self.base);
         println!("📡 POST {} (ack)", url);
 
@@ -121,6 +156,10 @@ impl Bridge {
     }
 
     async fn mark_done(&self, id: &str, success: bool, msg: Option<String>) -> Result<()> {
+        if self.base.is_empty() {
+            return Err(anyhow::anyhow!("BACKEND environment variable is not set. Please check your .env file and ensure BACKEND is properly configured."));
+        }
+        
         let url = format!("{}/jobs-done", self.base);
         println!("📡 POST {} (mark_done)", url);
 
@@ -147,6 +186,10 @@ impl Bridge {
     }
 
     async fn get_bridge_token(&self) -> Result<String> {
+        if self.base.is_empty() {
+            return Err(anyhow::anyhow!("BACKEND environment variable is not set. Please check your .env file and ensure BACKEND is properly configured."));
+        }
+        
         let url = format!("{}/get-bridge-token", self.base);
         println!("📡 POST {} (get token)", url);
 
@@ -170,6 +213,10 @@ impl Bridge {
     // ===============================================================
 
     async fn process_job(&self, job: &Job) -> Result<()> {
+        if self.base.is_empty() {
+            return Err(anyhow::anyhow!("BACKEND environment variable is not set. Please check your .env file and ensure BACKEND is properly configured."));
+        }
+        
         let token = self.get_bridge_token().await?;
         let url = format!("{}/signed-download-secure?id={}", self.base, job.id);
         println!("📡 GET {} (signed download)", url);

@@ -160,6 +160,40 @@ Check that `frontend/settings.html` exists and is properly formatted.
 3. Check console output for connection errors
 4. Test connectivity: `npm run mock` (starts local mock server)
 
+### Environment Configuration Issues
+
+#### "relative URL without a base" Error
+If you see errors like:
+```
+Tick error: builder error: relative URL without a base
+```
+
+This means the `BACKEND` environment variable is not being loaded properly. Check:
+
+1. **`.env` file location**: Ensure your `.env` file is in the correct location and readable
+2. **Environment variables**: Verify all required variables are set:
+   ```bash
+   BACKEND=https://your-project.supabase.co/functions/v1
+   ROBOT_BASE=http://192.168.0.57:31950
+   ROBOT_ID=robot-1
+   BRIDGE_SHARED_SECRET=your-secret
+   ```
+
+#### "Connection refused to localhost:31950" Error
+If the app tries to connect to `localhost:31950` instead of your robot's IP:
+
+1. **Check `.env` loading**: The built binary may not find your `.env` file
+2. **Verify config priority**: Environment variables should override saved settings
+3. **Temporary fix**: If the above doesn't work, you can hardcode your robot IP in `src-tauri/config.rs`:
+   ```rust
+   robot_base: std::env::var("ROBOT_BASE").unwrap_or_else(|_| "http://YOUR_ROBOT_IP:31950".into()),
+   ```
+   Replace `YOUR_ROBOT_IP` with your actual robot IP address (e.g., `192.168.0.57`)
+
+4. **Permanent solution**: Ensure the `.env` file is accessible by:
+   - Copying `.env` to the same directory as your built binary
+   - Or using the settings UI to configure the robot IP directly
+
 ### Build Errors
 1. Clean build artifacts: `npm run clean:cargo`
 2. Restart development server: `npm run start-fresh`
