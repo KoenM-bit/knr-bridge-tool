@@ -10,14 +10,53 @@
     "distDir": "../frontend"
   },
   "tauri": {
-    "bundle": {
-      "identifier": "com.knr.bridge",
-      "targets": ["dmg", "app"],
-      "icon": ["icon.png"],
-      "resources": [".env"],
-      "macOS": {
-        "minimumSystemVersion": "10.13"
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "path": {
+        "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": ["**"]
+      },
+      "dialog": {
+        "all": false,
+        "open": true,
+        "save": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": ["https://**", "http://**"]
       }
+    },
+    "bundle": {
+      "active": true,
+      "identifier": "com.knr.bridge",
+      "targets": ["app", "dmg"],
+      "icon": [
+        "icons/icon.ico",
+        "icons/icon.png"
+      ],
+      "resources": [".env"],
+      "category": "DeveloperTool",
+      "copyright": "© 2025 KNR Bridge Tool",
+      "macOS": {
+        "minimumSystemVersion": "10.13",
+        "license": ""
+      },
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
+    },
+    "security": {
+      "csp": null
     },
     "systemTray": {
       "iconPath": "icon.png"

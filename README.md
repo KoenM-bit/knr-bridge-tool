@@ -208,15 +208,45 @@ If the app tries to connect to `localhost:31950` instead of your robot's IP:
 ## ⚠️ Known Issues
 
 ### Build Distribution
-Currently, the application runs perfectly in development mode (`npm run dev`), but the production build (`npm run build`) generates only a binary executable instead of the expected platform-specific installers:
 
-- **macOS**: Missing `.dmg` installer generation
-- **Windows**: Missing `.exe` installer generation
-- **Current output**: Raw binary files only
+#### macOS ✅ **WORKING**
+The application now properly generates production-ready macOS bundles:
+- **`.app` bundle**: Ready for distribution and installation  
+- **`.dmg` installer**: Professional installer for end users
+- **Cross-compilation**: Not needed (building on macOS)
 
-**Workaround**: Use development mode for now. The production build issue is being investigated.
+#### Windows ⚠️ **Cross-compilation not supported**
+Windows `.exe` installers cannot be cross-compiled from macOS due to Tauri limitations:
 
-**Status**: 🔧 **Needs fixing** - Distribution packaging requires Tauri configuration updates.
+**Issue**: `embed_plist` error when cross-compiling
+```
+error[E0433]: failed to resolve: could not find `embed_plist` in `tauri`
+```
+
+**Solutions**:
+1. **Build on Windows machine** (recommended):
+   ```bash
+   # On Windows machine with Rust and Node.js installed
+   git clone https://github.com/KoenM-bit/knr-bridge-tool.git
+   cd knr-bridge-tool
+   npm install
+   npm run build  # Will generate .exe and .msi installers
+   ```
+
+2. **Use GitHub Actions** for automated cross-platform builds:
+   - Set up CI/CD workflow 
+   - Automatically build for Windows, macOS, and Linux
+   - No local Windows machine needed
+
+3. **Virtual Machine**: Run Windows in VM to build natively
+
+**Status**: 🔧 **Requires native Windows build environment** - Cross-compilation from macOS not supported by Tauri.
+
+#### Linux 🔄 **Not tested**
+Linux builds should work with:
+```bash
+npx tauri build --target x86_64-unknown-linux-gnu
+```
 ## 📄 License
 
 MIT License - see LICENSE file for details.
