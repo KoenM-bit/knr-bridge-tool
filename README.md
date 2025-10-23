@@ -247,6 +247,23 @@ Linux builds should work with:
 ```bash
 npx tauri build --target x86_64-unknown-linux-gnu
 ```
+
+## 📋 TODO
+
+### High Priority
+- [ ] **Fix .app bundle .env loading**: The bundled .app works when launched from terminal but fails when double-clicked in Finder due to working directory differences. The .env file path resolution needs to be updated to check bundled Resources directory.
+
+### Medium Priority
+- [ ] **Windows builds**: Set up proper cross-compilation or CI/CD for Windows .exe generation
+- [ ] **Linux builds**: Test and verify Linux AppImage/deb package generation
+- [ ] **Code signing**: Add proper code signing for macOS and Windows distributions
+- [ ] **Auto-updater**: Implement automatic update mechanism for deployed apps
+
+### Low Priority
+- [ ] **GUI improvements**: Add status indicators and better error messaging in the UI
+- [ ] **Configuration management**: Add GUI for editing robot settings without .env file
+- [ ] **Multi-robot support**: Support managing multiple robots from one bridge instance
+
 ## 📄 License
 
 MIT License - see LICENSE file for details.
