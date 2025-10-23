@@ -1,10 +1,10 @@
 # 🚀 KNR Bridge Tool
 
-A high-performance bridge application to execute Python scripts on Opentrons robots via a web interface. Fully migrated from Electron to Tauri for better performance, security, and smaller bundle size.
+A bridge application that connects the KNR Protocol Designer (app.knrbiotech.com) to your local Opentrons robot. This tool enables seamless protocol execution by automatically downloading generated Python scripts from the web designer and uploading them directly to your robot via your local network.
 
 ## ✨ Features
 
-- **🔧 System Tray Integration**: Runs in the background with a clean system tray interface
+- **🌐 KNR Protocol Designer Integration**: Direct connection to app.knrbiotech.com for seamless protocol deployment- **🔧 System Tray Integration**: Runs in the background with a clean system tray interface
 - **⚙️ Settings Management**: Easy configuration of robot IP, API endpoints, and other settings
 - **🔄 Bridge Protocol**: Automatic polling for jobs, downloading Python scripts, and uploading to robot
 - **📁 File Upload**: Test functionality to upload files directly to the robot
@@ -43,7 +43,7 @@ npm run dev
 ### **Development & Building**
 ```bash
 npm run dev              # Start development mode
-npm run build            # Production build
+npm run build            # Production build (⚠️  binary only, see Known Issues)
 npm run build:debug     # Debug build with symbols
 npm run mock             # Start mock robot server for testing
 ```
@@ -170,6 +170,19 @@ Check that `frontend/settings.html` exists and is properly formatted.
 2. Clean up: `npm run clean`
 3. Monitor with: `du -sh .git/` (should be <50MB)
 
+
+## ⚠️ Known Issues
+
+### Build Distribution
+Currently, the application runs perfectly in development mode (`npm run dev`), but the production build (`npm run build`) generates only a binary executable instead of the expected platform-specific installers:
+
+- **macOS**: Missing `.dmg` installer generation
+- **Windows**: Missing `.exe` installer generation
+- **Current output**: Raw binary files only
+
+**Workaround**: Use development mode for now. The production build issue is being investigated.
+
+**Status**: 🔧 **Needs fixing** - Distribution packaging requires Tauri configuration updates.
 ## 📄 License
 
 MIT License - see LICENSE file for details.
